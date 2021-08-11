@@ -1,0 +1,34 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order</title>
+</head>
+<body>
+    <div>
+        <h2>Order form</h2>
+        <form method="post">
+            <input type="hidden" value="@ViewBag.CarId" name="CarId" />
+            <div>
+                <label>Name: </label>
+                <input type="text" name="Name" />
+            </div>
+            <div>
+                <label>Lastname: </label>
+                <input type="text" name="Lastname" />
+            </div>
+            <div>
+                <label>Phone: </label>
+                <input type="text" name="Phone" />
+            </div>
+            <input type="submit" value="Send" />
+        </form>
+    </div>
+</body>
+</html>
