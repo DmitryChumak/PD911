@@ -34,11 +34,24 @@ namespace CarShop.Controllers
         }
 
         [HttpPost]
-        public string Buy(Order order)
+        public IActionResult Buy(Order order)
         {
-            context.Orders.Add(order);
-            context.SaveChanges();
-            return $"Thanks, {order.Name} for purchase!";
+            if (order.Name == "111")
+            {
+                ModelState.AddModelError("Name", "Error!");
+            }
+            
+
+            if (ModelState.IsValid)
+            {
+                context.Orders.Add(order);
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(order);
+            }
         }
       
     }
