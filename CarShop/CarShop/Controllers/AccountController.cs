@@ -31,10 +31,13 @@ namespace CarShop.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == model.Email && x.Password == model.Password);
+                User user = await context
+                                    .Users
+                                    .Include(x => x.Role)
+                                    .FirstOrDefaultAsync(x => x.Email == model.Email && x.Password == model.Password);
                 if (user != null)
                 {
-                    await Authenticate(user.Email);
+                    await Authenticate(user);
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -60,10 +63,16 @@ namespace CarShop.Controllers
                 User user = await context.Users.FirstOrDefaultAsync(x => x.Email == model.Email && x.Password == model.Password);
                 if (user == null)
                 {
-                    context.Users.Add(new User { Email = model.Email, Password = model.Password });
-                    await context.SaveChangesAsync();
+                    User newUser = new User { Email = model.Email, Password = model.Password };
+                    Role userRole = await context.Roles.FirstOrDefaultAsync(x => x.Name == "user");
+                    if (userRole != null)
+                    {
+                        newUser.Role = userRole;
+                    }
 
-                    await Authenticate(model.Email);
+                    context.Users.Add(newUser);
+                    await context.SaveChangesAsync();
+                    await Authenticate(newUser);
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -72,11 +81,12 @@ namespace CarShop.Controllers
             return View(model);
         }
 
-        private async Task Authenticate(string userName)
+        private async Task Authenticate(User user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, userName)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
             };
 
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
