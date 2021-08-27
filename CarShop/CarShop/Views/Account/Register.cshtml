@@ -21,14 +21,14 @@
             @Html.ValidationMessageFor(x => x.Password)
         </div>
         <div>
-            @Html.LabelFor(x => x.Year)
-            @Html.TextBoxFor(x => x.Year)
-            @Html.ValidationMessageFor(x => x.Year)
-        </div>
-        <div>
             @Html.LabelFor(x => x.ConfirmPassword)
             @Html.PasswordFor(x => x.ConfirmPassword)
             @Html.ValidationMessageFor(x => x.ConfirmPassword)
+        </div>
+        <div>
+            @Html.LabelFor(x => x.Year)
+            @Html.TextBoxFor(x => x.Year)
+            @Html.ValidationMessageFor(x => x.Year)
         </div>
         <input type="submit" value="Register" class="btn btn-warning" />
     </div>

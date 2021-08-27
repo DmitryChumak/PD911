@@ -54,6 +54,7 @@ namespace CarShop
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseStatusCodePages("text/html", "Error <b>404</b>!");
 
             app.UseRouting();
 
