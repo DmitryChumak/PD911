@@ -19,33 +19,67 @@ namespace CarShop.Controllers
             this.context = context;
         }
 
-        public IActionResult Index(SortType sortType = SortType.TitleAsc, string company = "(all)")
+        //public IActionResult Index(SortType sortType = SortType.TitleAsc, string company = "(all)")
+        //{
+        //    var selectListItems = new List<string> { "(all)" };
+        //    selectListItems.AddRange(context.Cars.Select(x => x.Title).Distinct());
+        //    IEnumerable<Car> cars = null;
+        //    switch (sortType)
+        //    {
+        //        case SortType.TitleAsc:
+        //            cars = context.Cars.OrderBy(x => x.Title).ToList();
+        //            break;
+        //        case SortType.ModelAsc:
+        //            cars = context.Cars.OrderBy(x => x.Model).ToList();
+        //            break;
+        //        case SortType.PriceAsc:
+        //            cars = context.Cars.OrderBy(x => x.Price).ToList();
+        //            break;
+        //    }
+        //    if (!company.ToLower().Contains("all"))
+        //    {
+        //        cars = cars.Where(x => x.Title.ToLower() == company.ToLower());
+        //    }
+        //    return View(new CarListViewModel
+        //    {
+        //        Cars = cars.ToList(),
+        //        Companies = new SelectList(selectListItems)
+        //    });
+
+        //}
+
+
+
+        public IActionResult Index()
+        {
+            return View();           
+        }
+
+
+        public IActionResult CarsJson()
+        {
+            return  Json(context.Cars.ToList());
+        }
+
+        public IActionResult CarsList(string search = "", string company = "(all)")
         {
             var selectListItems = new List<string> { "(all)" };
             selectListItems.AddRange(context.Cars.Select(x => x.Title).Distinct());
-            IEnumerable<Car> cars = null;
-            switch (sortType)
+
+            var cars = company == "(all)" ? 
+                context.Cars.ToList() : 
+                context.Cars.Where(x => x.Title.ToLower() == company.ToLower()).ToList();
+
+            if (!string.IsNullOrEmpty(search))
             {
-                case SortType.TitleAsc:
-                    cars = context.Cars.OrderBy(x => x.Title).ToList();
-                    break;
-                case SortType.ModelAsc:
-                    cars = context.Cars.OrderBy(x => x.Model).ToList();
-                    break;
-                case SortType.PriceAsc:
-                    cars = context.Cars.OrderBy(x => x.Price).ToList();
-                    break;
+                cars = cars.Where(x => x.Title.ToLower().Contains(search.ToLower())).ToList();
             }
-            if (!company.ToLower().Contains("all"))
+
+            return PartialView(new CarListViewModel
             {
-                cars = cars.Where(x => x.Title.ToLower() == company.ToLower());
-            }
-            return View(new CarListViewModel
-            {
-                Cars = cars.ToList(),
+                Cars = cars,
                 Companies = new SelectList(selectListItems)
             });
-
         }
 
         [HttpGet]
