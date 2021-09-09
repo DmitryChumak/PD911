@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CarShop.Controllers.Api
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class CarsController : Controller
     {
@@ -34,16 +35,32 @@ namespace CarShop.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<ActionResult<Car>> Post([FromBody]Car car)
+        public async Task<ActionResult<Car>> Post(Car car)
         {
+            if (car.Price >= 100000)
+            {
+                ModelState.AddModelError("Price", "Price should be less than 100000");
+            }
+            if (car.Title.ToLower() == "lada")
+            {
+                ModelState.AddModelError("Title", "You cannot add Lada to our shop");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             context.Cars.Add(car);
             await context.SaveChangesAsync();
             return Ok(car);
         }
 
         [HttpPut]
-        public async Task<ActionResult<Car>> Put([FromBody]Car car)
+        public async Task<ActionResult<Car>> Put(Car car)
         {
+            if (car == null)
+            {
+                return BadRequest();
+            }
             if (!context.Cars.Any(x => x.CarId == car.CarId))
             {
                 return NotFound();
